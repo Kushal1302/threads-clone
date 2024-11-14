@@ -28,3 +28,19 @@ This project is a clone of Threads, focusing on creating a minimalist, fast, and
 
 Here's a high-level look at the project's folder structure:
 threads-clone/ ├── public/ # Static files ├── src/ │ ├── components/ # Reusable UI components │ ├── pages/ # Next.js pages │ ├── styles/ # Global styles │ ├── hooks/ # Custom React hooks │ ├── utils/ # Utility functions │ └── types/ # TypeScript type definitions └── README.md # Project
+
+
+## 🛠️ Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v14 or newer)
+- [MongoDB](https://www.mongodb.com/) (or use MongoDB Atlas for cloud hosting)
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/Kushal1302/threads-clone.git
+   cd threads-clone
