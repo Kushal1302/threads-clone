@@ -27,4 +27,4 @@ This project is a clone of Threads, focusing on creating a minimalist, fast, and
 ## 📂 Folder Structure
 
 Here's a high-level look at the project's folder structure:
-
+threads-clone/ ├── public/ # Static files ├── src/ │ ├── components/ # Reusable UI components │ ├── pages/ # Next.js pages │ ├── styles/ # Global styles │ ├── hooks/ # Custom React hooks │ ├── utils/ # Utility functions │ └── types/ # TypeScript type definitions └── README.md # Project
