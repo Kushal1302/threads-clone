@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { LogOut } from "lucide-react";
+import { dark } from "@clerk/themes";
 
 const Topbar = () => {
   return (
@@ -32,6 +33,7 @@ const Topbar = () => {
           </div>
           <OrganizationSwitcher
             appearance={{
+              baseTheme: dark,
               elements: {
                 organizationSwitcherTrigger: "py-2 px-4",
               },
