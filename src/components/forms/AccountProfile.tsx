@@ -17,6 +17,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import { Textarea } from "../ui/textarea";
+import { isBase64Image } from "@/lib/utils";
+import { useUploadThing } from "@/lib/uploadthing";
 
 interface Props {
   user: {
@@ -31,6 +33,7 @@ interface Props {
 }
 const AccountProfile = ({ user, btnTitle }: Props) => {
   const [files, setFiles] = useState<File[]>([]);
+  const { startUpload } = useUploadThing("media");
   const form = useForm({
     resolver: zodResolver(UserValidation),
     defaultValues: {
@@ -40,7 +43,17 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
       bio: user.bio ?? "",
     },
   });
-  const onSubmit = (data: z.infer<typeof UserValidation>) => {
+  const onSubmit = async (data: z.infer<typeof UserValidation>) => {
+    const blob = data.profile_photo;
+    const hasImageChanged = isBase64Image(blob);
+
+    if (hasImageChanged) {
+      const imgRes = await startUpload(files);
+
+      if (imgRes && imgRes[0].url) {
+        data.profile_photo = imgRes[0].url;
+      }
+    }
     console.log(data);
   };
   const handleChange = (
