@@ -23,10 +23,10 @@ const page = async ({ params }: { params: { id: string } }) => {
           id={thread?.id ?? ""}
           parentId={thread?.parentId ?? ""}
           currentUserClerkId={user?.id ?? ""}
-          content={thread.text ?? ""}
-          author={thread?.user}
-          community={thread?.community}
-          comments={thread.children}
+          content={thread?.text ?? ""}
+          user={thread?.user ?? {}}
+          community={thread?.community ?? {}}
+          comments={thread?.children ?? []}
           createdAt={thread?.createdAt}
         />
       </div>
@@ -45,7 +45,7 @@ const page = async ({ params }: { params: { id: string } }) => {
             parentId={comment?.parentId ?? ""}
             currentUserClerkId={user?.id ?? ""}
             content={comment.text ?? ""}
-            author={comment?.user}
+            user={comment?.user}
             community={comment?.community}
             comments={comment.children}
             createdAt={comment?.createdAt}
