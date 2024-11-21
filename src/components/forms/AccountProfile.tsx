@@ -32,6 +32,7 @@ interface Props {
   };
   btnTitle: string;
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const AccountProfile = ({ user, btnTitle }: Props) => {
   const [files, setFiles] = useState<File[]>([]);
   const { startUpload } = useUploadThing("media");

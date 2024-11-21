@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { CommentValidation } from "@/lib/validations/thread";
 import Image from "next/image";
 import { z } from "zod";
@@ -16,7 +16,6 @@ interface Props {
 }
 const Comment = ({ threadId, currentUserId, currentUserImg }: Props) => {
   const pathname = usePathname();
-  const router = useRouter();
   const form = useForm({
     resolver: zodResolver(CommentValidation),
     defaultValues: {

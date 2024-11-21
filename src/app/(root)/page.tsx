@@ -4,6 +4,7 @@ import { currentUser } from "@clerk/nextjs/server";
 
 export default async function Home() {
   const user = await currentUser();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { posts, postCount, isNext } = await fetchPosts({
     pageNumber: 1,
     pageSize: 30,
@@ -22,7 +23,7 @@ export default async function Home() {
                 parentId={post.parentId}
                 currentUserClerkId={user?.id ?? ""}
                 content={post.text}
-                author={post.user}
+                user={post.user}
                 community={post?.community}
                 comments={post.children}
                 createdAt={post.createdAt}

@@ -81,6 +81,7 @@ export const fetchThreadById = async ({ threadId }: { threadId: string }) => {
         children: {
           include: {
             user: true,
+            community: true,
             children: {
               include: {
                 user: true,
