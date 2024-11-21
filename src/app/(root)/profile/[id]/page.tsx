@@ -4,11 +4,11 @@ import { redirect } from "next/navigation";
 import React from "react";
 
 interface PageProps {
-  params: { id: string }; // Match the expected structure
+  params: Promise<{ id: string }>; // Match the expected structure
 }
 
 const Page = async ({ params }: PageProps) => {
-  const { id } = params;
+  const { id } = await params;
 
   if (!id) return null;
 
