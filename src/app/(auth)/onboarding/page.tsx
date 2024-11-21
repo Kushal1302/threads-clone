@@ -1,14 +1,15 @@
 import AccountProfile from "@/components/forms/AccountProfile";
+import { fetchUser } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs/server";
 import React from "react";
 
 const page = async () => {
   const user = await currentUser();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const userInfo: any = {};
+  const userInfo: any = await fetchUser({ clerkId: user?.id ?? "" });
 
   const userData = {
-    id: user?.id,
+    id: user?.id ?? userInfo.clerkId,
     ObjectId: userInfo?._id,
     username: user?.username || userInfo?.username,
     name: user?.firstName || userInfo?.name,
