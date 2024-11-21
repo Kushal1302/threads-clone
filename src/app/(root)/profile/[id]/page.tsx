@@ -3,14 +3,22 @@ import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import React from "react";
 
-const page = async ({ params }: { params: { id: string } }) => {
+interface PageProps {
+  params: { id: string }; // Match the expected structure
+}
+
+const Page = async ({ params }: PageProps) => {
   const { id } = params;
+
   if (!id) return null;
+
   const user = await currentUser();
   if (!user) return null;
+
   const userInfo = await fetchUser({ clerkId: user.id });
   if (!userInfo?.onboarded) redirect("/onboarding");
+
   return <div>Profile Page</div>;
 };
 
-export default page;
+export default Page;
