@@ -38,6 +38,26 @@ const PostThread = ({ userId }: { userId: string }) => {
     router.push("/");
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleBeautify = async () => {
+    try {
+      const response = await fetch("/api/beautify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: form.getValues("thread") }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        form.setValue("thread", data.beautifiedText);
+      } else {
+        console.error(data.message);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
       <Form {...form}>
