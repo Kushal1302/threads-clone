@@ -3,6 +3,7 @@ import { Communities, User } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+
 interface childrenType {
   user: Partial<User>;
   community?: Partial<Communities> | null;
@@ -11,6 +12,7 @@ interface childrenType {
     community?: Partial<Communities> | null;
   }[];
 }
+
 interface Props {
   id: string;
   parentId: string | null;
@@ -21,7 +23,9 @@ interface Props {
   currentUserClerkId: string;
   isComment?: boolean;
   content: string;
+  imageUrl?: string; // Add optional image URL prop
 }
+
 const ThreadCard = ({
   id,
   parentId,
@@ -32,10 +36,11 @@ const ThreadCard = ({
   content,
   createdAt,
   isComment,
+  imageUrl, // Accept image URL as a prop
 }: Props) => {
   return (
     <article
-      className={`w-full mt-2 flex flex-col  rounded-xl ${
+      className={`w-full mt-2 flex flex-col rounded-xl ${
         isComment ? "px-0 xs:px-7" : "bg-dark-2 p-7"
       }`}
     >
@@ -59,8 +64,23 @@ const ThreadCard = ({
               </h4>
             </Link>
             <p className="mt-2 text-small-regular text-light-2">{content}</p>
+
+            {/* Conditionally Render Image */}
+            {imageUrl && (
+              <div className="mt-4 relative w-full max-h-96 rounded-lg overflow-hidden">
+                <Image
+                  src={imageUrl}
+                  alt="Thread image"
+                  layout="responsive"
+                  width={800}
+                  height={450}
+                  className="object-cover"
+                />
+              </div>
+            )}
+
             <div className="mt-5 flex flex-col gap-3">
-              <div className="flex gap-3 5">
+              <div className="flex gap-3">
                 <Image
                   src={"/assets/heart-gray.svg"}
                   alt="heart"
@@ -71,7 +91,7 @@ const ThreadCard = ({
                 <Link href={`/thread/${id}`}>
                   <Image
                     src={"/assets/reply.svg"}
-                    alt="heart"
+                    alt="reply"
                     width={24}
                     height={24}
                     className="cursor-pointer object-contain"
@@ -79,14 +99,14 @@ const ThreadCard = ({
                 </Link>
                 <Image
                   src={"/assets/repost.svg"}
-                  alt="heart"
+                  alt="repost"
                   width={24}
                   height={24}
                   className="cursor-pointer object-contain"
                 />
                 <Image
                   src={"/assets/share.svg"}
-                  alt="heart"
+                  alt="share"
                   width={24}
                   height={24}
                   className="cursor-pointer object-contain"
