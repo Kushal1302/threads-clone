@@ -27,6 +27,7 @@ export default async function Home() {
                 community={post?.community}
                 comments={post.children}
                 createdAt={post.createdAt}
+                imageUrl={post.imageUrl ?? ""}
               />
             ))}
           </>

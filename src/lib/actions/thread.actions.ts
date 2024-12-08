@@ -7,6 +7,7 @@ interface Props {
   text: string;
   communityId: string | null;
   path: string;
+  imageUrl: string | undefined;
 }
 
 export const createThread = async ({
@@ -14,6 +15,7 @@ export const createThread = async ({
   text,
   communityId,
   path,
+  imageUrl,
 }: Props) => {
   try {
     await prisma.threads.create({
@@ -22,6 +24,7 @@ export const createThread = async ({
         text,
         communityId,
         parentId: null,
+        imageUrl,
       },
     });
     revalidatePath(path);
