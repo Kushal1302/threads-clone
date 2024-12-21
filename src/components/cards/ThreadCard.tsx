@@ -23,7 +23,7 @@ interface Props {
   currentUserClerkId: string;
   isComment?: boolean;
   content: string;
-  imageUrl?: string; // Add optional image URL prop
+  imageUrls?: string[]; // Add optional image URL prop
 }
 
 const ThreadCard = ({
@@ -36,8 +36,9 @@ const ThreadCard = ({
   content,
   createdAt,
   isComment,
-  imageUrl, // Accept image URL as a prop
+  imageUrls, // Accept image URL as a prop
 }: Props) => {
+  console.log(imageUrls);
   return (
     <article
       className={`w-full mt-2 flex flex-col rounded-xl ${
@@ -66,16 +67,26 @@ const ThreadCard = ({
             <p className="mt-2 text-small-regular text-light-2">{content}</p>
 
             {/* Conditionally Render Image */}
-            {imageUrl && (
-              <div className="mt-4 relative w-full max-h-96 rounded-lg overflow-hidden">
-                <Image
-                  src={imageUrl}
-                  alt="Thread image"
-                  layout="responsive"
-                  width={800}
-                  height={450}
-                  className="object-cover"
-                />
+            {imageUrls && imageUrls.length > 0 && (
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                {imageUrls.map((url, index) => {
+                  console.log(url);
+                  return (
+                    <div
+                      key={index}
+                      className="relative w-full max-h-60 rounded-lg overflow-hidden"
+                    >
+                      <Image
+                        src={url}
+                        alt="Thread image"
+                        layout="responsive"
+                        width={800}
+                        height={450}
+                        className="object-cover"
+                      />
+                    </div>
+                  );
+                })}
               </div>
             )}
 
