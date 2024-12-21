@@ -23,8 +23,8 @@ import { useUploadThing } from "@/lib/uploadthing";
 const PostThread = ({ userId }: { userId: string }) => {
   const pathname = usePathname();
   const router = useRouter();
-  const [files, setFiles] = useState<File[]>([]);
-  const [imagePreview, setImagePreview] = useState("");
+  const [files, setFiles] = useState<File[]>([]); // Array to store multiple files
+  const [previews, setPreviews] = useState<string[]>([]); // Array for previews
   const { startUpload } = useUploadThing("media");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,64 +33,68 @@ const PostThread = ({ userId }: { userId: string }) => {
     defaultValues: {
       thread: "",
       userId,
-      imageUrl: "",
+      imageUrls: "",
     },
   });
 
   const onSubmit = async (data: z.infer<typeof ThreadValidation>) => {
     setIsLoading(true);
-    if (imagePreview) {
-      const imgRes = await startUpload(files);
 
-      if (imgRes && imgRes[0].url) {
-        data.imageUrl = imgRes[0].url;
+    let uploadedUrls: string[] = [];
+
+    try {
+      // Check if there are files to upload
+      if (previews.length > 0 && files.length > 0) {
+        const imgRes = await Promise.all(
+          files.map((file) => startUpload([file]))
+        );
+
+        // Process responses to extract URLs and filter out undefined
+        uploadedUrls = imgRes
+          .flat() // Flatten nested arrays if startUpload returns arrays
+          .map((file) => file?.url) // Map to extract URLs
+          .filter((url): url is string => url !== undefined); // Filter undefined values
       }
+
+      console.log("Uploaded URLs:", uploadedUrls);
+
+      // Create a thread with the uploaded URLs
+      await createThread({
+        text: data.thread,
+        communityId: null,
+        userId: data.userId,
+        path: pathname,
+        imageUrls: uploadedUrls, // Save all URLs as a comma-separated string
+      });
+      setIsLoading(false);
+      router.push("/");
+    } catch (error) {
+      console.error("Error uploading files or creating thread:", error);
     }
-    await createThread({
-      text: data.thread,
-      communityId: null,
-      userId: data.userId,
-      path: pathname,
-      imageUrl: data.imageUrl,
-    });
-    setIsLoading(false);
-    router.push("/");
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
+    if (e.target.files) {
+      const selectedFiles = Array.from(e.target.files); // Convert FileList to array
+      setFiles((prev) => [...prev, ...selectedFiles]);
+      console.log(selectedFiles);
 
-    const fileReader = new FileReader();
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      setFiles(Array.from(e.target.files));
-      if (!file.type.includes("image")) return;
-      fileReader.onload = async (event) => {
-        const imageDataUrl = event.target?.result?.toString() ?? "";
-        setImagePreview(imageDataUrl);
-      };
-      fileReader.readAsDataURL(file);
+      const newPreviews = selectedFiles.map((file) => {
+        if (file.type.includes("image")) {
+          return URL.createObjectURL(file); // Image preview URL
+        } else if (file.type.includes("video")) {
+          return URL.createObjectURL(file); // Video preview URL
+        }
+        return ""; // Fallback for unsupported file types
+      });
+
+      setPreviews((prev) => [...prev, ...newPreviews]); // Append new previews
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleBeautify = async () => {
-    try {
-      const response = await fetch("/api/beautify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: form.getValues("thread") }),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        form.setValue("thread", data.beautifiedText);
-      } else {
-        console.error(data.message);
-      }
-    } catch (error) {
-      console.error(error);
-    }
+  const removeFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index)); // Remove file from array
+    setPreviews((prev) => prev.filter((_, i) => i !== index)); // Remove preview from array
   };
 
   return (
@@ -110,51 +114,63 @@ const PostThread = ({ userId }: { userId: string }) => {
                   Content
                 </FormLabel>
                 <FormControl className="no-focus border border-dark-4 bg-dark-3 text-light-1">
-                  <Textarea rows={15} {...field} />
+                  <Textarea rows={5} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* Image Preview */}
-          {imagePreview && (
-            <div className="relative mt-4">
-              <Image
-                src={imagePreview}
-                alt="Selected Preview"
-                className="w-full max-h-64 object-cover rounded-md border border-dark-4 bg-dark-2"
-                width={200}
-                height={200}
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  setFiles([]);
-                  setImagePreview("");
-                }}
-                className="absolute top-2 right-2 bg-black bg-opacity-50 text-white rounded-full w-6 h-6 flex items-center justify-center"
-              >
-                ✕
-              </button>
+          {/* Media Previews */}
+          {previews.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
+              {previews.map((preview, index) => (
+                <div key={index} className="relative">
+                  {files[index]?.type.includes("video") ? (
+                    <video
+                      controls
+                      className="w-full max-h-64 object-cover rounded-md border border-dark-4 bg-dark-2"
+                    >
+                      <source src={preview} type={files[index]?.type} />
+                      Your browser does not support the video tag.
+                    </video>
+                  ) : (
+                    <Image
+                      src={preview}
+                      alt="Media Preview"
+                      className="w-full max-h-64 object-cover rounded-md border border-dark-4 bg-dark-2"
+                      width={200}
+                      height={200}
+                    />
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeFile(index)} // Remove file on click
+                    className="absolute top-2 right-2 bg-black bg-opacity-50 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
             </div>
           )}
 
-          {/* Image Upload */}
+          {/* File Upload */}
           <div className="flex items-center gap-2">
             <label
-              htmlFor="imageUpload"
+              htmlFor="mediaUpload"
               className="cursor-pointer text-primary-500 hover:font-bold font-semibold flex gap-2"
             >
               <ImagePlus />
-              <p>Add Photo</p>
+              <p>Add Media</p>
             </label>
             <input
               type="file"
-              id="imageUpload"
-              accept="image/*"
+              id="mediaUpload"
+              accept="image/*" // Accept images and videos
               onChange={handleChange}
               className="hidden"
+              multiple // Allow multiple file uploads
             />
           </div>
 
