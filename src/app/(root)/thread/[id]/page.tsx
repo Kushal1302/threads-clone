@@ -28,7 +28,7 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
           community={thread?.community ?? {}}
           comments={thread?.children ?? []}
           createdAt={thread?.createdAt}
-          imageUrl={thread?.imageUrl ?? ""}
+          imageUrls={thread?.imageUrls ?? []}
         />
       </div>
       <div className="mt-7">
